@@ -1,0 +1,5 @@
+1. Lexical analysis
+Lexer - generate tokens from soruce code
+    best use regex - simplest
+
+2. syntax_analysis

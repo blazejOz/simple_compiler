@@ -13,10 +13,11 @@ class IRInstr:
         return f"{self.res or ''} = {self.op} {self.arg1 or ''} {self.arg2 or ''}" if self.res else f"{self.op} {self.arg1 or ''} {self.arg2 or ''}"
 
 class IRGenerator:
-    def __init__(self):
-        self.instrs   = []      # list of IRInstr
+    def __init__(self, asts):
+        self.asts = asts
         self.temp_id  = 0
         self.label_id = 0
+        self.instrs = []
 
     def new_temp(self):
         self.temp_id += 1
@@ -26,13 +27,13 @@ class IRGenerator:
         self.label_id += 1
         return f"{base}{self.label_id}"
 
-    def gen(self, node):
-        # dispatch based on node type
-        if isinstance(node, PrintStmt):
-            self.gen_print(node)
-        else:
-            raise NotImplementedError(f"IR gen for {type(node)} not supported yet")
-        return self.instrs
+    def gen(self):
+        for node in self.asts:    
+            if isinstance(node, PrintStmt):
+                self.gen_print(node)
+            else:
+                raise NotImplementedError(f"IR gen for {type(node)} not supported yet")
+            return self.instrs
 
     def gen_print(self, node: PrintStmt):
         # generate IR for expression

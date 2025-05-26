@@ -6,4 +6,6 @@ from intermediate_representation.ir_generator import IRGenerator
 src    = "print(123)"
 tokens = Lexer(src).tokenize()
 ast    = Parser(tokens).parse()
-print(ast)    # powinno wypisać: PrintStmt(NumberExpr(123))
+ir_instr = IRGenerator(ast).gen()
+
+print(ir_instr)
