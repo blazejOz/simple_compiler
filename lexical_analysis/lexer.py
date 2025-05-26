@@ -29,11 +29,3 @@ class Lexer():
             col += len(value)
 
         self.tokens.append(Token("EOF", "", line, col))
-
-
-        
-
-
-lexer = Lexer("rprint(123)")
-lexer.tokenize()
-print(lexer.tokens)
