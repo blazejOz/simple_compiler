@@ -1,0 +1,11 @@
+1. zmienne z deklaracja narazie tylko int 
+2. Operatory arytmetyczne: +, -, *, /, %.
+3. Instrukcje sterujace:
+    warunkowe - if () {} / else {}
+    petle - while () {}
+4. Funckcje
+    func name(param1: int, param2: int): int {
+        ...
+    }
+5. Tablice: jeden wymiar np int a[10];
+6. Print 
