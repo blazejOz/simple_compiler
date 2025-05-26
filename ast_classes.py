@@ -1,4 +1,7 @@
 # ast.py
+"""
+Abstract Syntax Tree Clases
+"""
 class NumberExpr:
     def __init__(self, value: int):
         self.value = value

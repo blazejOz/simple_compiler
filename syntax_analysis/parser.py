@@ -7,9 +7,11 @@ class Parser:
         self.cur     = tokens[0]
 
     def parse(self):
-        stmt = self.parse_print_stmt()
+        stmts = []
+        while self.cur.kind != "EOF":
+            stmts.append(self.parse_print_stmt()) 
         self.expect("EOF")
-        return stmt
+        return stmts
 
     def advance(self):
         self.pos += 1
