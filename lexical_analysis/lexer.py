@@ -29,3 +29,4 @@ class Lexer():
             col += len(value)
 
         self.tokens.append(Token("EOF", "", line, col))
+        return self.tokens

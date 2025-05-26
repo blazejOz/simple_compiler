@@ -8,8 +8,8 @@ class TokenSpecification():
         ("NUMBER",   r"\d+"),
 
         #BRACETS
-        ("LPARENT", r"\("),
-        ("RPARENT", r"\)"),
+        ("LPAREN", r"\("),
+        ("RPAREN", r"\)"),
 
         ("SKIP", r"[ \t\n]+"), #skip tabs, space, newline
         ("MISMATCH", r"."), #other - error catch
