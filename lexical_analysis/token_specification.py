@@ -12,6 +12,6 @@ class TokenSpecification():
         ("RPARENT", r"\)"),
 
         ("SKIP", r"[ \t\n]+"), #skip tabs, space, newline
-        ("MISSMATCH", r"."), #other - error catch
+        ("MISMATCH", r"."), #other - error catch
 
         ]

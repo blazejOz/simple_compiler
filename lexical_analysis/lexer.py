@@ -34,6 +34,6 @@ class Lexer():
         
 
 
-lexer = Lexer("print(123)")
+lexer = Lexer("rprint(123)")
 lexer.tokenize()
 print(lexer.tokens)
