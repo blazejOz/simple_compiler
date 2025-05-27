@@ -3,7 +3,7 @@ Lexer - generate tokens from soruce code
     best use regex - simplest
 
 2. syntax_analysis
-Parser - generate AST(abstract syntax tree)
+Parser - generate AST(abstract syntax tree based on EBNF)
     create ast_classes with all AST designs
 
 3. Semantic Analysys - check AST for semantic errors, dead code

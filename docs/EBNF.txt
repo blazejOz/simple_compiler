@@ -1,0 +1,7 @@
+Program    ::= { Statement }
+Statement  ::= PrintStmt | ExprStmt
+PrintStmt  ::= "print" "(" Expr ")"
+ExprStmt   ::= Expr
+Expr       ::= Term { ("+" | "-") Term }
+Term       ::= Factor { ("*" | "/") Factor }
+Factor     ::= NUMBER | "(" Expr ")"

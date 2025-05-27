@@ -33,6 +33,9 @@ class Parser:
         return self.asts
 
     def parse_statment(self):
+        """
+        Statement  ::= PrintStmt | ExprStmt
+        """
         if self.current.kind == "PRINT":
             return self.parse_print_stmt()
         ### ADD MORE HERE
