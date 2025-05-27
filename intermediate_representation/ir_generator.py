@@ -19,35 +19,4 @@ class IRGenerator:
         self.label_id = 0
         self.instrs = []
 
-    def new_temp(self):
-        self.temp_id += 1
-        return f"t{self.temp_id}"
-
-    def new_label(self, base="L"):  
-        self.label_id += 1
-        return f"{base}{self.label_id}"
-
-    def gen(self):
-        for node in self.asts:    
-            if isinstance(node, PrintStmt):
-                self.gen_print(node)
-            else:
-                raise NotImplementedError(f"IR gen for {type(node)} not supported yet")
-            return self.instrs
-
-    def gen_print(self, node: PrintStmt):
-        # generate IR for expression
-        tmp = self.gen_expr(node.expr)
-        # push parameters (example IR)
-        self.instrs.append(IRInstr('param', 'fmt'))
-        self.instrs.append(IRInstr('param', tmp))
-        # call printf
-        self.instrs.append(IRInstr('call', 'printf', None, f"tcall{self.new_label()}") )
-
-    def gen_expr(self, expr):
-        if isinstance(expr, NumberExpr):
-            tmp = self.new_temp()
-            self.instrs.append(IRInstr('const', expr.value, None, tmp))
-            return tmp
-        else:
-            raise NotImplementedError(f"IR gen for {type(expr)} not supported yet")
+    
