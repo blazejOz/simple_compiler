@@ -7,7 +7,7 @@ class Parser:
         self.tokens  = tokens
         self.pos     = 0
         self.current = tokens[0]
-        self.asts = [] #Abstract Syntax Trees
+        self.asts    = [] #Abstract Syntax Trees
 
     def advance(self):
         """move to the next token"""
@@ -22,9 +22,9 @@ class Parser:
                 f"Expected {kind}, got {self.current.kind} "
                 f"at {self.current.line}:{self.current.col}"
             )
-        tok = self.current
+        token = self.current
         self.advance()
-        return tok
+        return token
 
     def parse(self):
         while self.current.kind != "EOF":
@@ -38,17 +38,14 @@ class Parser:
         """
         if self.current.kind == "PRINT":
             return self.parse_print_stmt()
-        ### ADD MORE HERE
+        ### ADD MORE STMT HERE
         else:
             return self.parse_expr()
 
-
-
-
-
-
-
     def parse_print_stmt(self):
+        """
+        PrintStmt  ::= "print" "(" Expr ")"
+        """
         self.expect("PRINT")
         self.expect("LPAREN")
         expr = self.parse_expr()
@@ -56,24 +53,38 @@ class Parser:
         return PrintStmt(expr)
 
     def parse_expr(self):
-        # handles addition: Expr ::= Factor { ADD Factor }
-        left = self.parse_factor()
+        """
+        Expr       ::= Term { ("+" | "-") Term }
+
+        for entry 1 + 2 + 3:
+        left = BinaryExpr('+', BinaryExpr('+', NumberExpr(1), NumberExpr(2)), NumberExpr(3))
+        """
+        left = self.parse_term()
         while self.current.kind in ("ADD", "SUB"):
-            op_tok = self.current
-            right  = self.parse_factor()
-            left   = BinaryExpr(op_tok.text, left, right)
+            operator = self.current.text
+            self.advance()
+            right = self.parse_term()
+            left = BinaryExpr(operator, left, right) # Left build up until no more addition or substraction
+        return left
+
+    def parse_term(self):
+        left = self.parse_factor()
+        while self.current.kind in ("MUL", "DIV"):
+            operator = self.current.text
+            self.advance()
+            right = self.parse_factor()
+            left = BinaryExpr(operator, left, right)
         return left
 
     def parse_factor(self):
-        # handles numbers and parenthesized sub-expressions
         if self.current.kind == "NUMBER":
-            tok = self.expect("NUMBER")
-            return NumberExpr(int(tok.text))
+            token = self.expect("NUMBER")
+            return NumberExpr(int(token.text))
         if self.current.kind == "LPAREN":
             self.expect("LPAREN")
-            node = self.parse_expr()
+            expr = self.parse_expr()
             self.expect("RPAREN")
-            return node
-        raise SyntaxError(
-            f"Unexpected {self.current.kind} at {self.current.line}:{self.current.col}"
-        )
+            return expr
+        raise SyntaxError(f"Unexpected {self.current}")
+
+
