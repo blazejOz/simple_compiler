@@ -3,9 +3,10 @@ from syntax_analysis.parser import Parser
 from intermediate_representation.ir_generator import IRGenerator
 
 
-src    = "print(123)"
+src    = "print(1+2)"
 tokens = Lexer(src).tokenize()
 ast    = Parser(tokens).parse()
-ir_instr = IRGenerator(ast).gen()
+print(ast)
+#ir_instr = IRGenerator(ast).gen()
 
-print(ir_instr)
+#print(ir_instr)

@@ -15,3 +15,12 @@ class PrintStmt:
 
     def __repr__(self):
         return f"PrintStmt({self.expr})"
+
+class BinaryExpr:
+    def __init__(self, operator: str, left, right):
+        self.op = operator
+        self.left = left
+        self.right = right
+
+    def __repr__(self):
+        return f"BinaryExpr({self.left!r}, '{self.op}', {self.right!r})"
