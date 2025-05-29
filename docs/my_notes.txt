@@ -13,3 +13,6 @@ IR - genereate TAC(three address code) with quadruple structure:
     Quadruple: It is a structure which consists of 4 fields namely op, arg1, arg2 and result. 
     op denotes the operator and arg1 and arg2 denotes the two operands and result is used to store 
     the result of the expression. (from GeeksForGeeks)
+
+5. Code Gererator:
+    generate assembly code using libc library
