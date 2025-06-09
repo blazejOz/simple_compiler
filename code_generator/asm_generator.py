@@ -9,7 +9,24 @@ class AsmGenreator():
 
     
     def gen(self):
-        pass
+        self.gen_header()
 
-    def gen_header():
-        pass
+        for ir in self.ir_list:
+            pass
+
+        self.gen_footer()
+
+
+    def gen_header(self):
+        self.asm.append("section .data")
+        self.asm.append('    fmt: db "%d", 10, 0')
+        self.asm.append("")
+        self.asm.append("section .text")
+        self.asm.append("    global main")
+        self.asm.append("    extern printf")
+        self.asm.append("")
+        self.asm.append("main:")
+
+    def gen_footer(self):
+        self.asm.append("    mov   rax, 0")
+        self.asm.append("    ret")
