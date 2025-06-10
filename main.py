@@ -15,12 +15,12 @@ ir_instr = IRGenerator(ast).gen()
 for innstr in ir_instr:
     print(innstr)
 
-# asm = AsmGenerator(ir_instr).gen()
-# print(asm)
+asm = AsmGenerator(ir_instr).gen()
+print(asm)
 
-# with open("out.asm", "w") as f:
-#     f.write(asm)
+with open("out.asm", "w") as f:
+    f.write(asm)
 
-# subprocess.run(["nasm", "-felf64", "out.asm", "-o", "out.o"], check=True)
-# subprocess.run(["gcc", "out.o", "-no-pie", "-o", "a.out"], check=True)
-# print("Executable 'a.out' generated.")
+subprocess.run(["nasm", "-felf64", "out.asm", "-o", "out.o"], check=True)
+subprocess.run(["gcc", "out.o", "-no-pie", "-o", "a.out"], check=True)
+print("Executable 'a.out' generated.")

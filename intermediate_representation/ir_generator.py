@@ -5,7 +5,7 @@ class IRInstr:
         self.op   = op      # operator name, e.g. 'add', 'mul', 'param', 'call', 'return'
         self.arg1 = arg1    # first argument
         self.arg2 = arg2    # second argument (if any)
-        self.res  = res     # result temp or label
+        self.res  = res     # result, temp or label
     def __repr__(self):
         if self.op == "label":
             return f"{self.res}:"
@@ -58,7 +58,6 @@ class IRGenerator:
     def gen_node(self, node):
         """
         Generate IR for a single AST node.
-        This method is used to dispatch the generation to the appropriate method based on the node type.
         """
         if isinstance(node, PrintStmt):
             self.gen_print(node)
@@ -74,6 +73,9 @@ class IRGenerator:
             raise NotImplementedError(f"Unimplemented AST : {type(node)}")
 
     def gen_while(self, node):
+        """
+        Generate IR for while statement.
+        """
         start_label = self.new_label("start")
         end_label = self.new_label("end")
         self.ir_list.append(IRInstr('label', None, None, start_label))
@@ -85,6 +87,9 @@ class IRGenerator:
         self.ir_list.append(IRInstr('label', None, None, end_label))
 
     def gen_if(self, node):
+        """
+        Generate IR for if statement.
+        """
         cond_tmp = self.gen_expr(node.condition) #generate IR for condition
         true_label = self.new_label("true")
         false_label = self.new_label("false")
