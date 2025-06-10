@@ -1,7 +1,15 @@
-Program    ::= { Statement }
-Statement  ::= PrintStmt | ExprStmt
-PrintStmt  ::= "print" "(" Expr ")"
-ExprStmt   ::= Expr
-Expr       ::= Term { ("+" | "-") Term }
-Term       ::= Factor { ("*" | "/") Factor }
-Factor     ::= NUMBER | "(" Expr ")"
+Program      ::= { Statement }
+
+Statement    ::= VarDeclStmt
+               | PrintStmt
+               | ExprStmt
+
+VarDeclStmt  ::= "int" IDENT "=" Expr ";"
+PrintStmt    ::= "print" "(" Expr ")"
+ExprStmt     ::= Expr ";"
+
+Expr         ::= Term { ("+" | "-") Term }
+Term         ::= Factor { ("*" | "/") Factor }
+Factor       ::= NUMBER
+               | IDENT             ; variable reference
+               | "(" Expr ")"
