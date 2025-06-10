@@ -8,8 +8,8 @@ Statement    ::= VarDeclStmt
 VarDeclStmt  ::= "int" IDENT "=" Expr ";"
 PrintStmt    ::= "print" "(" Expr ")" ";"
 ExprStmt     ::= Expr ";"
-IfStmt       ::= "if" "(" Expr ")" Block [ "else" Block ]
-Block        ::= "{" { Statement } "}"
+IfStmt       ::= "if" "(" Expr ")" BlockStmt [ "else" BlockStmt ]
+BlockStmt        ::= "{" { Statement } "}"
 
 Expr         ::= CompareExpr
 CompareExpr  ::= AddExpr [ CompareOp AddExpr ]

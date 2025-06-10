@@ -57,3 +57,13 @@ class CompareExpr(ASTNode):
         self.left = left
         self.op = op
         self.right = right
+    
+    def __repr__(self):
+        return f"CompareExpr({self.left!r}, '{self.op}', {self.right!r})"
+
+class BlockStmt(ASTNode):
+    def __init__(self, statements):
+        self.statements = statements
+
+    def __repr__(self):
+        return f"BlockStmt({self.statements!r})"

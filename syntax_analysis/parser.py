@@ -1,4 +1,4 @@
-from ast_classes import VarExpr, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt, IfStmt, CompareExpr
+from ast_classes import VarExpr, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt, IfStmt, CompareExpr, BlockStmt
 
 class Parser:
     def __init__(self, tokens):
@@ -53,16 +53,26 @@ class Parser:
         self.expect("LPAREN")
         condition = self.parse_expr()
         self.expect("RPAREN")
-        self.expect("LBRACE")
-        true_branch = self.parse_statment()
-        self.expect("RBRACE")
+        true_branch = self.parse_block_stmt()
         if self.current.kind == "ELSE":
             self.expect("ELSE")
-            self.expect("LBRACE")
-            false_branch = self.parse_statment()
-            self.expect("RBRACE")
+
+            false_branch = self.parse_block_stmt()
+
             return IfStmt(condition, true_branch, false_branch)
         return IfStmt(condition, true_branch)
+    
+    def parse_block_stmt(self):
+        """
+        BlockStmt  ::= Statement { Statement }
+        """
+        statements = []
+        self.expect("LBRACE")
+        while self.current.kind != "RBRACE":
+            statements.append(self.parse_statment())
+        self.expect("RBRACE")
+        return BlockStmt(statements)
+
 
     def parse_var_decl_stmt(self):
         """
