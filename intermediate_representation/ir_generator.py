@@ -7,7 +7,27 @@ class IRInstr:
         self.arg2 = arg2    # second argument (if any)
         self.res  = res     # result temp or label
     def __repr__(self):
-        return f"{self.res or ''} = {self.op} {self.arg1 or ''} {self.arg2 or ''}" if self.res else f"{self.op} {self.arg1 or ''} {self.arg2 or ''}"
+        if self.op == "label":
+            return f"{self.res}:"
+        if self.op == "goto":
+            return f"goto {self.res}"
+        if self.op == "if_false":
+            return f"if_false {self.arg1} goto {self.res}"
+        if self.op == "if":
+            return f"if {self.arg1} goto {self.res}"
+        if self.op == "store":
+            return f"store {self.arg1} {self.arg2}"
+        if self.op == "load":
+            return f"{self.res} = load {self.arg1}"
+        if self.op == "const":
+            return f"{self.res} = const {self.arg1}"
+        if self.op == "param":
+            return f"param {self.arg1}"
+        if self.op == "call":
+            return f"{self.res} = call {self.arg1}"
+        if self.op in {"add", "sub", "mul", "div", "eq", "neq", "lt", "gt", "leq", "geq"}:
+            return f"{self.res} = {self.op} {self.arg1} {self.arg2}"
+        return f"{self.op} {self.arg1 or ''} {self.arg2 or ''} {self.res or ''}"
 
 class IRGenerator:
     """
@@ -53,6 +73,17 @@ class IRGenerator:
         else:
             raise NotImplementedError(f"Unimplemented AST : {type(node)}")
 
+    def gen_while(self, node):
+        start_label = self.new_label("start")
+        end_label = self.new_label("end")
+        self.ir_list.append(IRInstr('label', None, None, start_label))
+        cond_tmp = self.gen_expr(node.condition)
+        self.ir_list.append(IRInstr('if_false', cond_tmp, None, end_label))
+        if isinstance(node.body, BlockStmt):
+            self.gen_block(node.body)
+        self.ir_list.append(IRInstr('goto', None, None, start_label))
+        self.ir_list.append(IRInstr('label', None, None, end_label))
+
     def gen_if(self, node):
         cond_tmp = self.gen_expr(node.condition) #generate IR for condition
         true_label = self.new_label("true")
@@ -79,15 +110,7 @@ class IRGenerator:
         Generate IR for block statement
         """
         for stmt in node.statements:
-            if isinstance(stmt, PrintStmt):
-                self.gen_print(stmt)
-            elif isinstance(stmt, VarDeclStmt):
-                self.gen_var_decl(stmt)
-            elif isinstance(stmt, IfStmt):
-                self.gen_if(stmt)
-            
-            else:
-                raise NotImplementedError(f"Unimplemented AST in block: {type(stmt)}")
+            self.gen_node(stmt) #generate IR for each statement in block
 
     def gen_print(self, node):
         """
@@ -103,7 +126,15 @@ class IRGenerator:
 
     def gen_var_decl(self, node):
         """
-        Generate IR for variable declaration statement"""
+        Generate IR for variable declaration statement
+        """
+        expr_tmp = self.gen_expr(node.expr)
+        self.ir_list.append(IRInstr('store', node.var_name, expr_tmp, None))
+
+    def gen_assign(self, node):
+        """
+        Generate IR for assignment statement
+        """
         expr_tmp = self.gen_expr(node.expr)
         self.ir_list.append(IRInstr('store', node.var_name, expr_tmp, None))
 

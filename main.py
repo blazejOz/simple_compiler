@@ -10,10 +10,10 @@ tokens = Lexer(src).tokenize()
 print(tokens)
 ast    = Parser(tokens).parse()
 print(ast)
-# ir_instr = IRGenerator(ast).gen()
+ir_instr = IRGenerator(ast).gen()
 
-# for innstr in ir_instr:
-#     print(innstr)
+for innstr in ir_instr:
+    print(innstr)
 
 # asm = AsmGenerator(ir_instr).gen()
 # print(asm)
