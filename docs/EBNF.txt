@@ -3,11 +3,18 @@ Program      ::= { Statement }
 Statement    ::= VarDeclStmt
                | PrintStmt
                | ExprStmt
+               | IfStmt
 
 VarDeclStmt  ::= "int" IDENT "=" Expr ";"
 PrintStmt    ::= "print" "(" Expr ")" ";"
 ExprStmt     ::= Expr ";"
+IfStmt       ::= "if" "(" Expr ")" Block [ "else" Block ]
+Block        ::= "{" { Statement } "}"
 
-Expr         ::= Term { ("+" | "-") Term }
+Expr         ::= CompareExpr
+CompareExpr  ::= AddExpr [ CompareOp AddExpr ]
+CompareOp    ::= "==" | "!=" | "<" | "<=" | ">" | ">="
+
+AddExpr      ::= Term { ("+" | "-") Term }
 Term         ::= Factor { ("*" | "/") Factor }
-Factor       ::= NUMBER  | IDENT | "(" Expr ")"
+Factor       ::= NUMBER | IDENT | "(" Expr ")"

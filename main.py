@@ -5,15 +5,15 @@ from syntax_analysis.parser import Parser
 from intermediate_representation.ir_generator import IRGenerator
 
 
-src    = "int x = 5+2; print(x);"
+src    = "int x = 5+2*2; int y = x; print(y);"
 tokens = Lexer(src).tokenize()
 print(tokens)
 ast    = Parser(tokens).parse()
 print(ast)
-# ir_instr = IRGenerator(ast).gen()
+ir_instr = IRGenerator(ast).gen()
 
-# for innstr in ir_instr:
-#     print(innstr)
+for innstr in ir_instr:
+    print(innstr)
 
 # asm = AsmGenerator(ir_instr).gen()
 # print(asm)

@@ -1,4 +1,4 @@
-from ast_classes import NumberExpr, PrintStmt, BinaryExpr
+from ast_classes import NumberExpr, PrintStmt, BinaryExpr, VarDeclStmt, VarExpr
 
 class IRInstr:
     def __init__(self, op, arg1=None, arg2=None, res=None):
@@ -26,15 +26,15 @@ class IRGenerator:
 
     def new_label(self, name="L"):
         """ genereate new label"""
-        self.label_id += 1 
+        self.label_id += 1
         return name + str(self.label_id)
 
     def gen(self):
         for node in self.asts:
             if isinstance(node, PrintStmt):
                 self.gen_print(node)
-            # elif isinstance(node, NumberExpr):
-                # tmp = self.gen_expr(node)
+            elif isinstance(node, VarDeclStmt):
+                self.gen_var_decl(node)
             else:
                 raise NotImplementedError(f"Nieobslugiwany AST: {type(node)}")
         return self.ir_list
@@ -49,6 +49,9 @@ class IRGenerator:
         call_tmp = self.new_label("call")
         self.ir_list.append(IRInstr('call', 'printf', None, call_tmp))
 
+    def gen_var_decl(self, node):
+        expr_tmp = self.gen_expr(node.expr)
+        self.ir_list.append(IRInstr('store', node.var_name, expr_tmp, None))
 
     def gen_expr(self, node):
         if isinstance(node, NumberExpr):
@@ -63,6 +66,10 @@ class IRGenerator:
             operator = operator_map[node.op]
             self.ir_list.append(IRInstr(operator, left, right, res))
             return res
+        if isinstance(node, VarExpr):
+            temp = self.new_temp()
+            self.ir_list.append(IRInstr('load', node.name, None, temp))
+            return temp
         
         raise NotImplementedError(f"IR gen for {type(node)} error")
             

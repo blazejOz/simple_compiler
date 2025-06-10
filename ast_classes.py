@@ -13,7 +13,7 @@ class NumberExpr(ASTNode):
     def __repr__(self):
         return f"NumberExpr({self.value})"
 
-class IdentExpr(ASTNode):
+class VarExpr(ASTNode):
     def __init__(self, name: str):
         self.name = name
     def __repr__(self):
@@ -42,3 +42,9 @@ class VarDeclStmt(ASTNode):
 
     def __repr__(self):
         return f"VarDeclStmt({self.var_name}, {self.expr})"
+    
+class CompareExpr(ASTNode):
+    def __init__(self, left, op, right):
+        self.left = left
+        self.op = op
+        self.right = right
