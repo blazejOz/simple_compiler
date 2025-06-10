@@ -5,15 +5,15 @@ from syntax_analysis.parser import Parser
 from intermediate_representation.ir_generator import IRGenerator
 
 
-src    = "int x = 5; int y = 3; if (x < y) { print(y); } else { print(x); }"
+src    = "int x = 5; int y = 3; if (x < y) { print(y*3); } else { print(x+1+3*9); }"
 tokens = Lexer(src).tokenize()
 print(tokens)
 ast    = Parser(tokens).parse()
 print(ast)
-# ir_instr = IRGenerator(ast).gen()
+ir_instr = IRGenerator(ast).gen()
 
-# for innstr in ir_instr:
-#     print(innstr)
+for innstr in ir_instr:
+    print(innstr)
 
 # asm = AsmGenerator(ir_instr).gen()
 # print(asm)
