@@ -4,11 +4,13 @@ Statement    ::= VarDeclStmt
                | PrintStmt
                | ExprStmt
                | IfStmt
+               | WhileStmt
 
 VarDeclStmt  ::= "int" IDENT "=" Expr ";"
 PrintStmt    ::= "print" "(" Expr ")" ";"
 ExprStmt     ::= Expr ";"
 IfStmt       ::= "if" "(" Expr ")" BlockStmt [ "else" BlockStmt ]
+WhileStmt    ::= "while" "(" Expr ")" BlockStmt
 BlockStmt        ::= "{" { Statement } "}"
 
 Expr         ::= CompareExpr

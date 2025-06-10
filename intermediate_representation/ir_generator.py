@@ -1,4 +1,4 @@
-from ast_classes import NumberExpr, PrintStmt, BinaryExpr, VarDeclStmt, VarExpr, IfStmt, BlockStmt, CompareExpr
+from ast_classes import AssignStmt, NumberExpr, PrintStmt, BinaryExpr, VarDeclStmt, VarExpr, IfStmt, BlockStmt, CompareExpr, WhileStmt
 
 class IRInstr:
     def __init__(self, op, arg1=None, arg2=None, res=None):
@@ -32,16 +32,27 @@ class IRGenerator:
 
     def gen(self):
         for node in self.ast_nodes:
-            if isinstance(node, PrintStmt):
-                self.gen_print(node)
-            elif isinstance(node, VarDeclStmt):
-                self.gen_var_decl(node)
-            elif isinstance(node, IfStmt):
-                self.gen_if(node)
-            else:
-                raise NotImplementedError(f"Unimplemented AST : {type(node)}")
+            self.gen_node(node)
         return self.ir_list
     
+    def gen_node(self, node):
+        """
+        Generate IR for a single AST node.
+        This method is used to dispatch the generation to the appropriate method based on the node type.
+        """
+        if isinstance(node, PrintStmt):
+            self.gen_print(node)
+        elif isinstance(node, VarDeclStmt):
+            self.gen_var_decl(node)
+        elif isinstance(node, IfStmt):
+            self.gen_if(node)
+        elif isinstance(node, WhileStmt):
+            self.gen_while(node)
+        elif isinstance(node, AssignStmt):
+            self.gen_assign(node)
+        else:
+            raise NotImplementedError(f"Unimplemented AST : {type(node)}")
+
     def gen_if(self, node):
         cond_tmp = self.gen_expr(node.condition) #generate IR for condition
         true_label = self.new_label("true")
@@ -74,10 +85,13 @@ class IRGenerator:
                 self.gen_var_decl(stmt)
             elif isinstance(stmt, IfStmt):
                 self.gen_if(stmt)
+            
             else:
                 raise NotImplementedError(f"Unimplemented AST in block: {type(stmt)}")
 
     def gen_print(self, node):
+        """
+        Generate IR for print statement"""
         tmp = self.gen_expr(node.expr) #generete IR for expr - print(expr)
 
         #print parmas:
@@ -88,10 +102,15 @@ class IRGenerator:
         self.ir_list.append(IRInstr('call', 'printf', None, call_tmp))
 
     def gen_var_decl(self, node):
+        """
+        Generate IR for variable declaration statement"""
         expr_tmp = self.gen_expr(node.expr)
         self.ir_list.append(IRInstr('store', node.var_name, expr_tmp, None))
 
     def gen_expr(self, node):
+        """
+        Generate IR for expression node.
+        """
         if isinstance(node, CompareExpr):
             left = self.gen_expr(node.left)
             right = self.gen_expr(node.right)

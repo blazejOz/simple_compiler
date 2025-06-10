@@ -7,6 +7,7 @@ class TokenSpecification():
         ("INT",   r"int\b"),
         ("IF",    r"if\b"),
         ("ELSE",  r"else\b"),
+        ("WHILE", r"while\b"),
 
         # IDENTIFIERS
         ("IDENT", r"[a-zA-Z_][a-zA-Z0-9_]*"), # variable names, function names, etc

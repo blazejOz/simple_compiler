@@ -1,4 +1,4 @@
-from ast_classes import VarExpr, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt, IfStmt, CompareExpr, BlockStmt
+from ast_classes import VarExpr, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt, IfStmt, CompareExpr, BlockStmt, WhileStmt, AssignStmt
 
 class Parser:
     def __init__(self, tokens):
@@ -40,11 +40,26 @@ class Parser:
             return self.parse_var_decl_stmt()
         if self.current.kind == "IF":
             return self.parse_if_stmt()
+        if self.current.kind == "WHILE":
+            return self.parse_while_stmt()
+        if self.current.kind == "IDENT":
+            return self.parse_assign_stmt()
         
         expr = self.parse_expr()
         self.expect("SEMI")
         return expr
     
+    def parse_while_stmt(self):
+        """
+        WhileStmt  ::= "while" "(" Expr ")" BlockStmt
+        """
+        self.expect("WHILE")
+        self.expect("LPAREN")
+        condition = self.parse_expr()
+        self.expect("RPAREN")
+        body = self.parse_block_stmt()
+        return WhileStmt(condition, body)
+
     def parse_if_stmt(self):
         """
         IfStmt     ::= "if" "(" Expr ")" "{" Statement "}" [ "else" "{" Statement "}" ]
@@ -85,6 +100,16 @@ class Parser:
         self.expect("SEMI")
         return VarDeclStmt(var_name, expr)
 
+    def parse_assign_stmt(self):
+        """
+        AssignStmt ::= Identifier "=" Expr ";"
+        """
+        var_name = self.expect("IDENT").text
+        self.expect("ASSIGN")
+        expr = self.parse_expr()
+        self.expect("SEMI")
+        return AssignStmt(var_name, expr)
+
     def parse_print_stmt(self):
         """
         PrintStmt  ::= "print" "(" Expr ")"
@@ -123,6 +148,9 @@ class Parser:
         return left
 
     def parse_term(self):
+        """
+        Term        ::= Factor [ ("*" | "/") Factor ]
+        """
         left = self.parse_factor()
         while self.current.kind in ("MUL", "DIV"):
             operator = self.current.text
