@@ -1,4 +1,4 @@
-from ast_classes import VarExpr, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt
+from ast_classes import VarExpr, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt, IfStmt, CompareExpr
 
 class Parser:
     def __init__(self, tokens):
@@ -38,10 +38,31 @@ class Parser:
             return self.parse_print_stmt()
         if self.current.kind == "INT":
             return self.parse_var_decl_stmt()
+        if self.current.kind == "IF":
+            return self.parse_if_stmt()
         
         expr = self.parse_expr()
         self.expect("SEMI")
         return expr
+    
+    def parse_if_stmt(self):
+        """
+        IfStmt     ::= "if" "(" Expr ")" "{" Statement "}" [ "else" "{" Statement "}" ]
+        """
+        self.expect("IF")
+        self.expect("LPAREN")
+        condition = self.parse_expr()
+        self.expect("RPAREN")
+        self.expect("LBRACE")
+        true_branch = self.parse_statment()
+        self.expect("RBRACE")
+        if self.current.kind == "ELSE":
+            self.expect("ELSE")
+            self.expect("LBRACE")
+            false_branch = self.parse_statment()
+            self.expect("RBRACE")
+            return IfStmt(condition, true_branch, false_branch)
+        return IfStmt(condition, true_branch)
 
     def parse_var_decl_stmt(self):
         """
@@ -67,12 +88,23 @@ class Parser:
 
     def parse_expr(self):
         """
-        Expr       ::= Term { ("+" | "-") Term }
-
-        for entry 1 + 2 + 3:
-        left = BinaryExpr('+', BinaryExpr('+', NumberExpr(1), NumberExpr(2)), NumberExpr(3))
+        Expr         ::= CompareExpr
+        CompareExpr  ::= AddExpr [ CompareOp AddExpr ]
+        CompareOp    ::= "==" | "!=" | "<" | "<=" | ">" | ">="
         """
-        left = self.parse_term()
+        left = self.parse_add_expr()
+        if self.current.kind in ("EQ", "NEQ", "LT", "LEQ", "GT", "GEQ"):
+            operator = self.current.text
+            self.advance()
+            right = self.parse_add_expr()
+            return CompareExpr(left, operator, right)
+        return left
+    
+    def parse_add_expr(self):
+        """
+        AddExpr     ::= Term [ ("+" | "-") Term ]
+        """
+        left = self.parse_term() 
         while self.current.kind in ("ADD", "SUB"):
             operator = self.current.text
             self.advance()

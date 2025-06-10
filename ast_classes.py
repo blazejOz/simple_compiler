@@ -42,6 +42,15 @@ class VarDeclStmt(ASTNode):
 
     def __repr__(self):
         return f"VarDeclStmt({self.var_name}, {self.expr})"
+
+class IfStmt(ASTNode):
+    def __init__(self, condition, then_branch, else_branch=None):
+        self.condition = condition
+        self.then_branch = then_branch
+        self.else_branch = else_branch
+
+    def __repr__(self):
+        return f"IfStmt({self.condition!r}, {self.then_branch!r}, {self.else_branch!r})"
     
 class CompareExpr(ASTNode):
     def __init__(self, left, op, right):
