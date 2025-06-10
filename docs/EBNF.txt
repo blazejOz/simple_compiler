@@ -1,17 +1,17 @@
-Program      ::= { Statement }
-
 Statement    ::= VarDeclStmt
+               | AssignStmt
                | PrintStmt
                | ExprStmt
                | IfStmt
                | WhileStmt
 
 VarDeclStmt  ::= "int" IDENT "=" Expr ";"
+AssignStmt   ::= IDENT "=" Expr ";"
 PrintStmt    ::= "print" "(" Expr ")" ";"
 ExprStmt     ::= Expr ";"
 IfStmt       ::= "if" "(" Expr ")" BlockStmt [ "else" BlockStmt ]
 WhileStmt    ::= "while" "(" Expr ")" BlockStmt
-BlockStmt        ::= "{" { Statement } "}"
+BlockStmt    ::= "{" { Statement } "}"
 
 Expr         ::= CompareExpr
 CompareExpr  ::= AddExpr [ CompareOp AddExpr ]
