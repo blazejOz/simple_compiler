@@ -5,11 +5,9 @@ Statement    ::= VarDeclStmt
                | ExprStmt
 
 VarDeclStmt  ::= "int" IDENT "=" Expr ";"
-PrintStmt    ::= "print" "(" Expr ")"
+PrintStmt    ::= "print" "(" Expr ")" ";"
 ExprStmt     ::= Expr ";"
 
 Expr         ::= Term { ("+" | "-") Term }
 Term         ::= Factor { ("*" | "/") Factor }
-Factor       ::= NUMBER
-               | IDENT             ; variable reference
-               | "(" Expr ")"
+Factor       ::= NUMBER  | IDENT | "(" Expr ")"

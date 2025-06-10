@@ -1,6 +1,4 @@
-# syntax_analysis/parser.py
-
-from ast_classes import NumberExpr, PrintStmt, BinaryExpr
+from ast_classes import IdentExpr, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt
 
 class Parser:
     def __init__(self, tokens):
@@ -38,9 +36,23 @@ class Parser:
         """
         if self.current.kind == "PRINT":
             return self.parse_print_stmt()
-        ### ADD MORE STMT HERE
-        else:
-            return self.parse_expr()
+        if self.current.kind == "INT":
+            return self.parse_var_decl_stmt()
+        
+        expr = self.parse_expr()
+        self.expect("SEMI")
+        return expr
+
+    def parse_var_decl_stmt(self):
+        """
+        VarDeclStmt ::= "int" Identifier "=" Expr ";"
+        """
+        self.expect("INT")
+        var_name = self.expect("IDENT").text
+        self.expect("ASSIGN")
+        expr = self.parse_expr()
+        self.expect("SEMI")
+        return VarDeclStmt(var_name, expr)
 
     def parse_print_stmt(self):
         """
@@ -50,6 +62,7 @@ class Parser:
         self.expect("LPAREN")
         expr = self.parse_expr()
         self.expect("RPAREN")
+        self.expect("SEMI")
         return PrintStmt(expr)
 
     def parse_expr(self):
@@ -80,6 +93,9 @@ class Parser:
         if self.current.kind == "NUMBER":
             token = self.expect("NUMBER")
             return NumberExpr(int(token.text))
+        if self.current.kind == "IDENT":
+            token = self.expect("IDENT")
+            return IdentExpr(token.text)
         if self.current.kind == "LPAREN":
             self.expect("LPAREN")
             expr = self.parse_expr()
