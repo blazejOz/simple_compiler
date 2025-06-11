@@ -5,7 +5,7 @@ from syntax_analysis.parser import Parser
 from intermediate_representation.ir_generator import IRGenerator
 
 
-src    = "int x = 5; if (x > 3){str msg1 = \"mesegas1\"; print(msg1); }else{print(2); }" # type: ignore
+src    = "int x = 5; if (x > 0) {str msg1 = \"dodatnie\"; print(msg1);}else {str msg2 = \"ujemne\"; print(msg2);}"
 tokens = Lexer(src).tokenize()
 print(tokens)
 ast    = Parser(tokens).parse()

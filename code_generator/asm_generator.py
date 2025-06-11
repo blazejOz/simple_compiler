@@ -32,8 +32,8 @@ class AsmGenerator:
     
     def gen_header(self):
         self.asm.append("section .data")
-        self.asm.append('    fmt: db "%d", 10, 0')
-        self.asm.append('    strfmt: db "%s", 10, 0')
+        self.asm.append('    fmt_int: db "%d", 10, 0')
+        self.asm.append('    fmt_str: db "%s", 10, 0')
         for name, value in self.string_vars.items():
             self.asm.append(f'    {name}: db {value}, 0')
         self.asm.append("")
@@ -186,19 +186,27 @@ class AsmGenerator:
         self.asm.append(f"    setne {reg_res}b")
 
     def emit_param(self, instr):
-        if instr.arg1.startswith("t"):
-            self.param_queue.append(('int', instr.arg1))
-        else:
-            self.param_queue.append(('str', instr.arg1))
+        self.param_queue.append(instr.arg1)
 
     def emit_call(self, instr):
-        kind, val = self.param_queue[-1]
-        if kind == 'int':
-            self.asm.append("    lea rdi, [rel fmt]")
+        
+        if len(self.param_queue) < 2:
+            raise RuntimeError("Not enough parameters for printf call")
+        fmt = self.param_queue[-2]
+        val = self.param_queue[-1]
+
+        if fmt == "fmt_int":
+            self.asm.append("    lea rdi, [rel fmt_int]")
+        elif fmt == "fmt_str":
+            self.asm.append("    lea rdi, [rel fmt_str]")
+        else:
+            raise RuntimeError(f"Unknown format string: {fmt}")
+        # Set value
+        if isinstance(val, str) and val.startswith("t"):
             reg = self.temp_to_reg[val]
             self.asm.append(f"    mov rsi, {reg}")
         else:
-            self.asm.append("    lea rdi, [rel strfmt]")
+            # Assume it's a variable name (string label)
             self.asm.append(f"    lea rsi, [rel {val}]")
         self.asm.append("    xor eax, eax")
         self.asm.append(f"    call {instr.arg1}")
