@@ -1,33 +1,40 @@
 from ast_classes import AssignStmt, NumberExpr, PrintStmt, BinaryExpr, VarDeclStmt, VarExpr, IfStmt, BlockStmt, CompareExpr, WhileStmt
 
 class IRInstr:
-    def __init__(self, op, arg1=None, arg2=None, res=None):
+    def __init__(self, op, arg1=None, arg2=None, dest=None):
         self.op   = op      # operator name, e.g. 'add', 'mul', 'param', 'call', 'return'
         self.arg1 = arg1    # first argument
         self.arg2 = arg2    # second argument (if any)
-        self.res  = res     # result, temp or label
+        self.dest  = dest     # result, temp or label
+    
     def __repr__(self):
         if self.op == "label":
-            return f"{self.res}:"
+            return f"{self.dest}:"
         if self.op == "goto":
-            return f"goto {self.res}"
+            return f"goto {self.dest}"
         if self.op == "if_false":
-            return f"if_false {self.arg1} goto {self.res}"
+            return f"if_false {self.arg1} goto {self.dest}"
         if self.op == "if":
-            return f"if {self.arg1} goto {self.res}"
+            return f"if {self.arg1} goto {self.dest}"
         if self.op == "store":
             return f"store {self.arg1} {self.arg2}"
         if self.op == "load":
-            return f"{self.res} = load {self.arg1}"
+            return f"{self.dest} = load {self.arg1}"
         if self.op == "const":
-            return f"{self.res} = const {self.arg1}"
+            return f"{self.dest} = const {self.arg1}"
         if self.op == "param":
             return f"param {self.arg1}"
         if self.op == "call":
-            return f"{self.res} = call {self.arg1}"
+            return f"{self.dest} = call {self.arg1}"
         if self.op in {"add", "sub", "mul", "div", "eq", "neq", "lt", "gt", "leq", "geq"}:
-            return f"{self.res} = {self.op} {self.arg1} {self.arg2}"
-        return f"{self.op} {self.arg1 or ''} {self.arg2 or ''} {self.res or ''}"
+            return f"{self.dest} = {self.op} {self.arg1} {self.arg2}"
+        return f"{self.op} {self.arg1 or ''} {self.arg2 or ''} {self.dest or ''}"
+    
+    def full_str(self):
+        """
+        Return full string representation of the instruction.
+        """
+        return f"{self.op} {self.arg1 or 'none'} {self.arg2 or 'none'} {self.dest or 'none'}".strip()
 
 class IRGenerator:
     """
@@ -150,27 +157,27 @@ class IRGenerator:
         if isinstance(node, CompareExpr):
             left = self.gen_expr(node.left)
             right = self.gen_expr(node.right)
-            res = self.new_temp()
+            dest = self.new_temp()
             operator_map = {'==':'eq', '!=':'neq', '<':'lt', '>':'gt', '<=':'leq', '>=':'geq'}
             operator = operator_map[node.op]
-            self.ir_list.append(IRInstr(operator, left, right, res))
-            return res
+            self.ir_list.append(IRInstr(operator, left, right, dest))
+            return dest
         if isinstance(node, NumberExpr):
-            temp  = self.new_temp()
-            self.ir_list.append(IRInstr('const', node.value, None, temp))
-            return temp
+            dest  = self.new_temp()
+            self.ir_list.append(IRInstr('const', node.value, None, dest))
+            return dest
         if isinstance(node, BinaryExpr):
             left = self.gen_expr(node.left)
             right = self.gen_expr(node.right)
-            res = self.new_temp()
+            dest = self.new_temp()
             operator_map = {'+':'add', '-':'sub', '*':'mul', '/':'div'}
             operator = operator_map[node.op]
-            self.ir_list.append(IRInstr(operator, left, right, res))
-            return res
+            self.ir_list.append(IRInstr(operator, left, right, dest))
+            return dest
         if isinstance(node, VarExpr):
-            temp = self.new_temp()
-            self.ir_list.append(IRInstr('load', node.name, None, temp))
-            return temp
+            dest = self.new_temp()
+            self.ir_list.append(IRInstr('load', node.name, None, dest))
+            return dest
         
         raise NotImplementedError(f"IR gen for {type(node)} error")
             

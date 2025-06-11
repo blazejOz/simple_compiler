@@ -67,6 +67,14 @@ class AsmGenerator:
         self.asm.append(f"    mov {reg_res}, 0")
         self.asm.append(f"    cmp {reg1}, {reg2}")
         self.asm.append(f"    setg {reg_res}b")
+    
+    def emit_geq(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.res)
+        self.asm.append(f"    mov {reg_res}, 0")
+        self.asm.append(f"    cmp {reg1}, {reg2}")
+        self.asm.append(f"    setge {reg_res}b")
 
     def emit_const(self, instr):
         reg = self.allocate_reg(instr.res)

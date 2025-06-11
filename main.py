@@ -5,7 +5,7 @@ from syntax_analysis.parser import Parser
 from intermediate_representation.ir_generator import IRGenerator
 
 
-src    = "int x = 5; while (x > 0 ) { print(x); x = x - 1; }"
+src    = "int x = 5; if (x > 3){print(x); }else{print(2); }"
 tokens = Lexer(src).tokenize()
 print(tokens)
 ast    = Parser(tokens).parse()
@@ -13,14 +13,14 @@ print(ast)
 ir_instr = IRGenerator(ast).gen()
 
 for innstr in ir_instr:
-    print(innstr)
+    print(innstr.full_str())
 
-asm = AsmGenerator(ir_instr).gen()
-print(asm)
+# asm = AsmGenerator(ir_instr).gen()
+# print(asm)
 
-with open("out.asm", "w") as f:
-    f.write(asm)
+# with open("out.asm", "w") as f:
+#     f.write(asm)
 
-subprocess.run(["nasm", "-felf64", "out.asm", "-o", "out.o"], check=True)
-subprocess.run(["gcc", "out.o", "-no-pie", "-o", "a.out"], check=True)
-print("Executable 'a.out' generated.")
+# subprocess.run(["nasm", "-felf64", "out.asm", "-o", "out.o"], check=True)
+# subprocess.run(["gcc", "out.o", "-no-pie", "-o", "a.out"], check=True)
+# print("Executable 'a.out' generated.")

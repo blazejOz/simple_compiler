@@ -3,4 +3,5 @@ __pychache__/
 *.pyc
 *.out
 *.o
-*.asm
+out.asm
+*.exe
