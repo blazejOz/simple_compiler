@@ -23,10 +23,10 @@ class VarExpr(ASTNode):
     def __init__(self, name: str):
         self.name = name
     def __repr__(self):
-        return f"IdentExpr({self.name!r})"
+        return f"VarExpr({self.name!r})"
 
 class PrintStmt(ASTNode):
-    def __init__(self, expr: NumberExpr):
+    def __init__(self, expr):
         self.expr = expr
 
     def __repr__(self):

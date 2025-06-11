@@ -1,0 +1,206 @@
+
+class AsmGenerator:
+    # Temporary registers for x86-64
+    TEMP_REGS = ["rdx", "rcx", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15"] 
+
+    def __init__(self, ir_list):
+        self.ir_list = ir_list
+        self.asm = []
+        self.temp_to_reg = {}
+        self.temp_reg_idx = 0
+        self.param_queue = []  # Queue for parameters for printf
+        self.string_vars = {} # Store string variables for .data section
+
+    
+    def gen(self):
+        """
+        Generate assembly code from the intermediate representation (IR) list.
+        """
+        self.collect_strings()
+        self.gen_header()
+        for instr in self.ir_list:
+            self.gen_emit(instr)
+        self.gen_footer()
+        return "\n".join(self.asm)
+
+    def gen_emit(self, instr):
+        handler = getattr(self, f"emit_{instr.op}", None)
+        if handler:
+            handler(instr)
+        else:
+            raise NotImplementedError(f"Unsupported IR: {instr.op}")
+    
+    def gen_header(self):
+        self.asm.append("section .data")
+        self.asm.append('    fmt: db "%d", 10, 0')
+        self.asm.append('    strfmt: db "%s", 10, 0')
+        for name, value in self.string_vars.items():
+            self.asm.append(f'    {name}: db {value}, 0')
+        self.asm.append("")
+        self.asm.append("section .bss")
+        for var in self.collect_vars():
+            if var not in self.string_vars:
+                self.asm.append(f"    {var}: resq 1")
+        self.asm.append("")
+        self.asm.append("section .text")
+        self.asm.append("    global main")
+        self.asm.append("    extern printf")
+        self.asm.append("")
+        self.asm.append("main:")
+
+    def gen_footer(self):
+        self.asm.append("    mov rax, 0")
+        self.asm.append("    ret")
+    
+    def collect_strings(self):
+        for instr in self.ir_list:
+            if instr.op == "store_str":
+                self.string_vars[instr.arg1] = instr.arg2
+
+    def collect_vars(self):
+        vars = set()
+        for instr in self.ir_list:
+            if instr.op == "store":
+                vars.add(instr.arg1)
+            if instr.op == "load":
+                vars.add(instr.arg1)
+        return vars
+    
+    def allocate_reg(self, temp):
+        if temp not in self.temp_to_reg:
+            if self.temp_reg_idx >= len(self.TEMP_REGS):
+                raise RuntimeError("Ran out of temp registers!")
+            self.temp_to_reg[temp] = self.TEMP_REGS[self.temp_reg_idx]
+            self.temp_reg_idx += 1
+        return self.temp_to_reg[temp]
+
+    ### Assembly Code Generation Methods ###
+    def emit_label(self, instr):
+        self.asm.append(f"{instr.dest}:")
+
+    def emit_goto(self, instr):
+        self.asm.append(f"    jmp {instr.dest}")
+
+    def emit_if(self, instr):
+        reg = self.temp_to_reg[instr.arg1]
+        self.asm.append(f"    cmp {reg}, 0")
+        self.asm.append(f"    jne {instr.dest}")
+
+    def emit_if_false(self, instr):
+        reg = self.temp_to_reg[instr.arg1]
+        self.asm.append(f"    cmp {reg}, 0")
+        self.asm.append(f"    je {instr.dest}")
+
+    def emit_store(self, instr):
+        reg = self.temp_to_reg[instr.arg2]
+        self.asm.append(f"    mov [{instr.arg1}], {reg}")
+
+    def emit_store_str(self, instr):
+        # Already handled in .data
+        pass
+
+    def emit_load(self, instr):
+        reg = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg}, [{instr.arg1}]")
+
+    def emit_const(self, instr):
+        reg = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg}, {instr.arg1}")
+
+    def emit_add(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg_res}, {reg1}")
+        self.asm.append(f"    add {reg_res}, {reg2}")
+
+    def emit_sub(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg_res}, {reg1}")
+        self.asm.append(f"    sub {reg_res}, {reg2}")
+
+    def emit_mul(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg_res}, {reg1}")
+        self.asm.append(f"    imul {reg_res}, {reg2}")
+
+    def emit_div(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov rax, {reg1}")
+        self.asm.append(f"    cqo")
+        self.asm.append(f"    idiv {reg2}")
+        self.asm.append(f"    mov {reg_res}, rax")
+
+    def emit_gt(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg_res}, 0")
+        self.asm.append(f"    cmp {reg1}, {reg2}")
+        self.asm.append(f"    setg {reg_res}b")
+
+    def emit_geq(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg_res}, 0")
+        self.asm.append(f"    cmp {reg1}, {reg2}")
+        self.asm.append(f"    setge {reg_res}b")
+
+    def emit_lt(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg_res}, 0")
+        self.asm.append(f"    cmp {reg1}, {reg2}")
+        self.asm.append(f"    setl {reg_res}b")
+
+    def emit_leq(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg_res}, 0")
+        self.asm.append(f"    cmp {reg1}, {reg2}")
+        self.asm.append(f"    setle {reg_res}b")
+
+    def emit_eq(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg_res}, 0")
+        self.asm.append(f"    cmp {reg1}, {reg2}")
+        self.asm.append(f"    sete {reg_res}b")
+
+    def emit_neq(self, instr):
+        reg1 = self.temp_to_reg[instr.arg1]
+        reg2 = self.temp_to_reg[instr.arg2]
+        reg_res = self.allocate_reg(instr.dest)
+        self.asm.append(f"    mov {reg_res}, 0")
+        self.asm.append(f"    cmp {reg1}, {reg2}")
+        self.asm.append(f"    setne {reg_res}b")
+
+    def emit_param(self, instr):
+        if instr.arg1.startswith("t"):
+            self.param_queue.append(('int', instr.arg1))
+        else:
+            self.param_queue.append(('str', instr.arg1))
+
+    def emit_call(self, instr):
+        kind, val = self.param_queue[-1]
+        if kind == 'int':
+            self.asm.append("    lea rdi, [rel fmt]")
+            reg = self.temp_to_reg[val]
+            self.asm.append(f"    mov rsi, {reg}")
+        else:
+            self.asm.append("    lea rdi, [rel strfmt]")
+            self.asm.append(f"    lea rsi, [rel {val}]")
+        self.asm.append("    xor eax, eax")
+        self.asm.append(f"    call {instr.arg1}")
+        self.param_queue.clear()
+        

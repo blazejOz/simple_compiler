@@ -18,6 +18,8 @@ class IRInstr:
             return f"if {self.arg1} goto {self.dest}"
         if self.op == "store":
             return f"store {self.arg1} {self.arg2}"
+        if self.op == "store_str":
+            return f"store_str {self.arg1} {self.arg2}"
         if self.op == "load":
             return f"{self.dest} = load {self.arg1}"
         if self.op == "const":
@@ -126,23 +128,29 @@ class IRGenerator:
 
     def gen_print(self, node):
         """
-        Generate IR for print statement"""
-        tmp = self.gen_expr(node.expr) #generete IR for expr - print(expr)
-
-        #print parmas:
-        self.ir_list.append(IRInstr('param', "fmt")) # fmt - format param for printf
-        self.ir_list.append(IRInstr('param', tmp)) # param of what to print
-        #call print:
+        Generate IR for print statement
+        """
+        expr = node.expr
+        # Print numbers (literal or int variable)
+        if isinstance(expr, NumberExpr):
+            tmp = self.gen_expr(expr)
+            self.ir_list.append(IRInstr('param', tmp))
+        elif isinstance(expr, VarExpr):
+            # Just emit param with the variable name; ASM generator will decide if it's string or int
+            self.ir_list.append(IRInstr('param', expr.name))
+        else:
+            raise NotImplementedError("print only supports numbers or variables")
         call_tmp = self.new_label("call")
         self.ir_list.append(IRInstr('call', 'printf', None, call_tmp))
+
 
     def gen_var_decl(self, node):
         """
         Generate IR for variable declaration statement
         """
-        if node.var_type == 'string':
-            expr_tmp = self.gen_expr(node.expr)
-            self.ir_list.append(IRInstr('const', node.value, None, node.var_name))
+        if node.var_type == 'STRING':
+            string_val = self.gen_expr(node.expr)
+            self.ir_list.append(IRInstr('store_str', node.var_name, string_val, None))
             return
         expr_tmp = self.gen_expr(node.expr)
         self.ir_list.append(IRInstr('store', node.var_name, expr_tmp, None))
@@ -183,9 +191,7 @@ class IRGenerator:
             self.ir_list.append(IRInstr('load', node.name, None, dest))
             return dest
         if isinstance(node, StringExpr):
-            dest = self.new_temp()
-            self.ir_list.append(IRInstr('const', node.value, None, dest))
-            return dest
+            return node.value
         
         raise NotImplementedError(f"IR gen for {type(node)} error")
             
