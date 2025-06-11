@@ -5,7 +5,7 @@ class IRInstr:
         self.op   = op      # operator name, e.g. 'add', 'mul', 'param', 'call', 'return'
         self.arg1 = arg1    # first argument
         self.arg2 = arg2    # second argument (if any)
-        self.dest  = dest     # result, temp or label
+        self.dest  = dest   # result, temp or label
     
     def __repr__(self):
         if self.op == "label":

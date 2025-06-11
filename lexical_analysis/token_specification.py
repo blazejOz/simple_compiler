@@ -41,6 +41,9 @@ class TokenSpecification():
         ("LEQ", r"<="),
         ("GEQ", r">="),
 
+        ("COMMENT", r"#[^\n]*"),
+
+
         ("SKIP", r"[ \t\n]+"), #skip tabs, space, newline
         ("MISMATCH", r"."), #other - error catch (needs to be last)
 

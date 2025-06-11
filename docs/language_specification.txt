@@ -1,0 +1,71 @@
+Basic Compiler Language Specification
+=====================================
+
+1. Data Types
+-------------
+- int:    64-bit signed integer
+- str:    String (sequence of characters, double-quoted)
+
+2. Variable Declaration
+-----------------------
+- Syntax: `<type> <identifier> = <expression>;`
+- Example: 
+    int x = 5;
+    str msg = "hello";
+
+3. Assignment
+-------------
+- Syntax: `<identifier> = <expression>;`
+- Example:
+    x = 10;
+    msg = "world";
+
+4. Expressions
+--------------
+- Integer literals: e.g., 42
+- String literals: e.g., "hello"
+- Variables: e.g., x, msg
+- Binary arithmetic: +, -, *, /
+    - Example: x = x - 1;
+- Comparisons: ==, !=, <, >, <=, >=
+    - Example: x > 0
+
+5. Statements
+-------------
+- Variable declaration (see above)
+- Assignment (see above)
+- Print statement:
+    - Syntax: print(<expression>);
+    - Example: print(x); print(msg);
+- If statement:
+    - Syntax:
+        if (<condition>) { <block> } else { <block> }
+    - Example:
+        if (x > 0) { print(msg); } else { print(x); }
+- While statement:
+    - Syntax:
+        while (<condition>) { <block> }
+    - Example:
+        while (x > 0) { print(x); x = x - 1; }
+
+6. Blocks
+---------
+- A block is a sequence of statements enclosed in braces `{ ... }`.
+
+7. Comments
+-----------
+- Line comments start with `#` and continue to the end of the line.
+
+8. Whitespace
+-------------
+- Whitespace (spaces, tabs, newlines) is ignored except as needed to separate tokens.
+
+9. Example Program
+------------------
+```
+int x = 5;
+while (x > 0) {
+    print(x);
+    x = x - 1;
+}
+```
