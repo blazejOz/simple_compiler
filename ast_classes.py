@@ -13,6 +13,12 @@ class NumberExpr(ASTNode):
     def __repr__(self):
         return f"NumberExpr({self.value})"
 
+class StringExpr(ASTNode):
+    def __init__(self, value):
+        self.value = value
+    def __repr__(self):
+        return f'StringExpr({self.value!r})'
+
 class VarExpr(ASTNode):
     def __init__(self, name: str):
         self.name = name
@@ -36,7 +42,8 @@ class BinaryExpr(ASTNode):
         return f"BinaryExpr({self.left!r}, '{self.op}', {self.right!r})"
     
 class VarDeclStmt(ASTNode):
-    def __init__(self, var_name: str, expr):
+    def __init__(self, var_type, var_name: str, expr):
+        self.var_type = var_type
         self.var_name = var_name
         self.expr = expr
 

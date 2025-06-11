@@ -1,4 +1,4 @@
-from ast_classes import VarExpr, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt, IfStmt, CompareExpr, BlockStmt, WhileStmt, AssignStmt
+from ast_classes import VarExpr, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt, IfStmt, CompareExpr, BlockStmt, WhileStmt, AssignStmt, StringExpr
 
 class Parser:
     def __init__(self, tokens):
@@ -37,6 +37,8 @@ class Parser:
         if self.current.kind == "PRINT":
             return self.parse_print_stmt()
         if self.current.kind == "INT":
+            return self.parse_var_decl_stmt()
+        if self.current.kind == "STRING":
             return self.parse_var_decl_stmt()
         if self.current.kind == "IF":
             return self.parse_if_stmt()
@@ -91,14 +93,24 @@ class Parser:
 
     def parse_var_decl_stmt(self):
         """
-        VarDeclStmt ::= "int" Identifier "=" Expr ";"
+        VarDeclStmt ::= Type Identifier "=" Expr ";"
         """
-        self.expect("INT")
-        var_name = self.expect("IDENT").text
-        self.expect("ASSIGN")
-        expr = self.parse_expr()
-        self.expect("SEMI")
-        return VarDeclStmt(var_name, expr)
+        var_type = self.current.kind
+        if var_type == "INT":
+            self.expect("INT")
+            var_name = self.expect("IDENT").text
+            self.expect("ASSIGN")
+            expr = self.parse_expr()
+            self.expect("SEMI")
+            return VarDeclStmt(var_type, var_name, expr)
+        if var_type == "STRING":
+            self.expect("STRING")
+            var_name = self.expect("IDENT").text
+            self.expect("ASSIGN")
+
+            expr = StringExpr(self.expect("STRING_LITERAL").text)
+            self.expect("SEMI")
+            return VarDeclStmt(var_type, var_name, expr)
 
     def parse_assign_stmt(self):
         """

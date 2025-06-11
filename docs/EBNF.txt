@@ -5,7 +5,8 @@ Statement    ::= VarDeclStmt
                | IfStmt
                | WhileStmt
 
-VarDeclStmt  ::= "int" IDENT "=" Expr ";"
+VarDeclStmt  ::= Type IDENT "=" Expr ";"
+Type         ::= "int" | "str"
 AssignStmt   ::= IDENT "=" Expr ";"
 PrintStmt    ::= "print" "(" Expr ")" ";"
 ExprStmt     ::= Expr ";"

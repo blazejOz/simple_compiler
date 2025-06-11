@@ -1,4 +1,4 @@
-from ast_classes import AssignStmt, NumberExpr, PrintStmt, BinaryExpr, VarDeclStmt, VarExpr, IfStmt, BlockStmt, CompareExpr, WhileStmt
+from ast_classes import AssignStmt, NumberExpr, PrintStmt, BinaryExpr, StringExpr, VarDeclStmt, VarExpr, IfStmt, BlockStmt, CompareExpr, WhileStmt
 
 class IRInstr:
     def __init__(self, op, arg1=None, arg2=None, dest=None):
@@ -140,6 +140,10 @@ class IRGenerator:
         """
         Generate IR for variable declaration statement
         """
+        if node.var_type == 'string':
+            expr_tmp = self.gen_expr(node.expr)
+            self.ir_list.append(IRInstr('const', node.value, None, node.var_name))
+            return
         expr_tmp = self.gen_expr(node.expr)
         self.ir_list.append(IRInstr('store', node.var_name, expr_tmp, None))
 
@@ -177,6 +181,10 @@ class IRGenerator:
         if isinstance(node, VarExpr):
             dest = self.new_temp()
             self.ir_list.append(IRInstr('load', node.name, None, dest))
+            return dest
+        if isinstance(node, StringExpr):
+            dest = self.new_temp()
+            self.ir_list.append(IRInstr('const', node.value, None, dest))
             return dest
         
         raise NotImplementedError(f"IR gen for {type(node)} error")

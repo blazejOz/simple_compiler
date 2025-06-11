@@ -5,6 +5,7 @@ class TokenSpecification():
         #KEY WORDS
         ("PRINT", r"print\b"),
         ("INT",   r"int\b"),
+        ("STRING", r"str\b"),
         ("IF",    r"if\b"),
         ("ELSE",  r"else\b"),
         ("WHILE", r"while\b"),
@@ -14,6 +15,7 @@ class TokenSpecification():
 
         #LITERALS
         ("NUMBER", r"\d+"),  # integer
+        ("STRING_LITERAL", r'"[^"]*"'),  # string literal (double quotes)
 
         #PUNCTUATION
         ("SEMI", r";"),

@@ -16,7 +16,7 @@ class AsmGenerator:
                 handler(instr)
             else:
                 raise NotImplementedError(f"Unsupported IR: {instr.op}")
-            self.free_dead_regs(idx)  # <--- free unused temps
+            self.free_dead_regs(idx)
         self.gen_footer()
         return "\n".join(self.asm)
 
@@ -32,7 +32,7 @@ class AsmGenerator:
     def free_dead_regs(self, current_index):
         used_later = set()
         for instr in self.ir_list[current_index+1:]:
-            for arg in [instr.arg1, instr.arg2, instr.res]:
+            for arg in [instr.arg1, instr.arg2, instr.dest]:
                 if isinstance(arg, str) and arg.startswith("t"):
                     used_later.add(arg)
         # Also keep temps that are queued as params for a call
