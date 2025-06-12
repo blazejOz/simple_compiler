@@ -6,7 +6,7 @@ from intermediate_representation.ir_generator import IRGenerator
 from intermediate_representation.ir_optimizer import IROptimizer
 
 
-src    = "int x = 5 + 3; x = x * 2; "
+src    = "int x = 5 + 3; x = x * 2; print(\"hello\");"
 tokens = Lexer(src).tokenize()
 print(tokens)
 ast    = Parser(tokens).parse()
@@ -21,12 +21,12 @@ ir_optimized = IROptimizer(ir_instr).optimize()
 for innstr in ir_optimized:
     print(innstr)
 
-# asm = AsmGenerator(ir_instr).gen()
-# print(asm)
+asm = AsmGenerator(ir_instr).gen()
+print(asm)
 
-# with open("out.asm", "w") as f:
-#     f.write(asm)
+with open("out.asm", "w") as f:
+    f.write(asm)
 
-# subprocess.run(["nasm", "-felf64", "out.asm", "-o", "out.o"], check=True)
-# subprocess.run(["gcc", "out.o", "-no-pie", "-o", "a.out"], check=True)
-# print("Executable 'a.out' generated.")
+subprocess.run(["nasm", "-felf64", "out.asm", "-o", "out.o"], check=True)
+subprocess.run(["gcc", "out.o", "-no-pie", "-o", "a.out"], check=True)
+print("Executable 'a.out' generated.")

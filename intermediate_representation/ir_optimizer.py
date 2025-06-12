@@ -1,14 +1,14 @@
 from intermediate_representation.ir_instruction import IRInstr
 
 class IROptimizer:
-    def __init__(self, ir_code):
-        self.ir_code = ir_code
+    def __init__(self, ir_list):
+        self.ir_list = ir_list
 
     def optimize(self):
         # Implement optimization passes
         self.constant_folding()
         self.dead_code_elimination()
-        return self.ir_code
+        return self.ir_list
 
     def constant_folding(self):
         """
@@ -17,7 +17,7 @@ class IROptimizer:
         """
         constants = {}
         new_ir_code = []
-        for instr in self.ir_code:
+        for instr in self.ir_list:
             if instr.op == 'const':
                 constants[instr.dest] = instr.arg1
                 new_ir_code.append(instr)
@@ -45,7 +45,7 @@ class IROptimizer:
                     new_ir_code.append(instr)
             else:
                 new_ir_code.append(instr)
-        self.ir_code = new_ir_code
+        self.ir_list = new_ir_code
             
 
     def dead_code_elimination(self):
@@ -54,18 +54,18 @@ class IROptimizer:
         """
         used_dests = set()
         # collect all destinations that are used in args
-        for instr in self.ir_code:
+        for instr in self.ir_list:
             for arg in (instr.arg1, instr.arg2):
                 if isinstance(arg, str) and arg.startswith('t'):
                     used_dests.add(arg)
         
         new_ir_code = []
         # filter out indtructions not in used_dests
-        for instr in self.ir_code:
+        for instr in self.ir_list:
             if instr.op in ("const", "add", "sub", "mul", "div"):
                 if instr.dest in used_dests:
                     new_ir_code.append(instr)
             else:
                 new_ir_code.append(instr)
-        self.ir_code = new_ir_code
+        self.ir_list = new_ir_code
             

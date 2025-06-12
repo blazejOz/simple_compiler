@@ -5,10 +5,11 @@ class AsmGenerator:
 
     def __init__(self, ir_list):
         self.ir_list = ir_list
+        self.ir_list_index = 0
         self.asm = []
-        self.temp_to_reg = {}
-        self.temp_reg_idx = 0
-        self.param_queue = []  # Queue for parameters for printf
+        self.free_regs = set(self.TEMP_REGS) 
+        self.temp_to_reg = {} # Map temporary variables to registers
+        self.param_queue = [] # Queue for parameters for printf
         self.string_vars = {} # Store string variables for .data section
 
     
@@ -20,6 +21,7 @@ class AsmGenerator:
         self.gen_header()
         for instr in self.ir_list:
             self.gen_emit(instr)
+            self.ir_list_index += 1
         self.gen_footer()
         return "\n".join(self.asm)
 
@@ -34,10 +36,12 @@ class AsmGenerator:
         self.asm.append("section .data")
         self.asm.append('    fmt_int: db "%d", 10, 0')
         self.asm.append('    fmt_str: db "%s", 10, 0')
+        # Add string variables to the .data section
         for name, value in self.string_vars.items():
             self.asm.append(f'    {name}: db {value}, 0')
         self.asm.append("")
         self.asm.append("section .bss")
+        # Allocate space for variables in the .bss section
         for var in self.collect_vars():
             if var not in self.string_vars:
                 self.asm.append(f"    {var}: resq 1")
@@ -67,12 +71,33 @@ class AsmGenerator:
         return vars
     
     def allocate_reg(self, temp):
+        """
+        Allocate a register for a temporary variable.
+        """
         if temp not in self.temp_to_reg:
-            if self.temp_reg_idx >= len(self.TEMP_REGS):
+            if not self.free_regs:
                 raise RuntimeError("Ran out of temp registers!")
-            self.temp_to_reg[temp] = self.TEMP_REGS[self.temp_reg_idx]
-            self.temp_reg_idx += 1
+            reg = self.free_regs.pop()
+            self.temp_to_reg[temp] = reg
         return self.temp_to_reg[temp]
+    
+    def deallocate_reg(self, temp):
+        """
+        Deallocate a register for a temporary variable.
+        """
+        if temp in self.temp_to_reg:
+            reg = self.temp_to_reg[temp]
+            self.free_regs.add(reg)
+            del self.temp_to_reg[temp]
+    
+    def is_temp_used_later(self, temp):
+        """
+        Check if a temporary variable is used later in the IR list.
+        """
+        for instr in self.ir_list[self.ir_list_index+1:]:
+            if instr.dest == temp or instr.arg1 == temp or instr.arg2 == temp:
+                return True
+        return False
 
     ### Assembly Code Generation Methods ###
     def emit_label(self, instr):
@@ -113,6 +138,11 @@ class AsmGenerator:
         reg_res = self.allocate_reg(instr.dest)
         self.asm.append(f"    mov {reg_res}, {reg1}")
         self.asm.append(f"    add {reg_res}, {reg2}")
+        #delocate reg if not used later
+        if not self.is_temp_used_later(instr.arg1):
+            self.deallocate_reg(instr.arg1)
+        if not self.is_temp_used_later(instr.arg2):
+            self.deallocate_reg(instr.arg2)
 
     def emit_sub(self, instr):
         reg1 = self.temp_to_reg[instr.arg1]
@@ -120,6 +150,11 @@ class AsmGenerator:
         reg_res = self.allocate_reg(instr.dest)
         self.asm.append(f"    mov {reg_res}, {reg1}")
         self.asm.append(f"    sub {reg_res}, {reg2}")
+        #delocate reg if not used later
+        if not self.is_temp_used_later(instr.arg1):
+            self.deallocate_reg(instr.arg1)
+        if not self.is_temp_used_later(instr.arg2):
+            self.deallocate_reg(instr.arg2)
 
     def emit_mul(self, instr):
         reg1 = self.temp_to_reg[instr.arg1]
@@ -127,6 +162,11 @@ class AsmGenerator:
         reg_res = self.allocate_reg(instr.dest)
         self.asm.append(f"    mov {reg_res}, {reg1}")
         self.asm.append(f"    imul {reg_res}, {reg2}")
+        #delocate reg if not used later
+        if not self.is_temp_used_later(instr.arg1):
+            self.deallocate_reg(instr.arg1)
+        if not self.is_temp_used_later(instr.arg2):
+            self.deallocate_reg(instr.arg2)
 
     def emit_div(self, instr):
         reg1 = self.temp_to_reg[instr.arg1]
@@ -136,6 +176,11 @@ class AsmGenerator:
         self.asm.append(f"    cqo")
         self.asm.append(f"    idiv {reg2}")
         self.asm.append(f"    mov {reg_res}, rax")
+        #delocate reg if not used later
+        if not self.is_temp_used_later(instr.arg1):
+            self.deallocate_reg(instr.arg1)
+        if not self.is_temp_used_later(instr.arg2):
+            self.deallocate_reg(instr.arg2)
 
     def emit_gt(self, instr):
         reg1 = self.temp_to_reg[instr.arg1]
