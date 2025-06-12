@@ -15,9 +15,8 @@
         the result of the expression. (from GeeksForGeeks)
 
 5. IR optimization: 
-    1. Dead code elimintation - 
-    2. Constant propagation - 
-    3. Constant folding - 
+    1. Constant folding - calculate expressions used by consttantts
+    2. Remove dead code  - remve code that is not used in any arguments
 
 5. Code Gererator:
     generate assembly(x86-64 AMD) code using libc library - 

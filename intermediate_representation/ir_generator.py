@@ -1,5 +1,5 @@
 from ast_classes import AssignStmt, NumberExpr, PrintStmt, BinaryExpr, StringExpr, VarDeclStmt, VarExpr, IfStmt, BlockStmt, CompareExpr, WhileStmt
-from ir_instruction import IRInstr
+from intermediate_representation.ir_instruction import IRInstr
 
 class IRGenerator:
     """
