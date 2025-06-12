@@ -1,18 +1,25 @@
 1. Lexical analysis
-Lexer - generate tokens from soruce code
+    Lexer - generate tokens from soruce code
     best use regex - simplest
 
 2. syntax_analysis
-Parser - generate AST(abstract syntax tree based on EBNF)
+    Parser - generate AST(abstract syntax tree based on EBNF)
     create ast_classes with all AST designs
 
 3. Semantic Analysys - check AST for semantic errors, dead code
 
 4.Intermediete Representation
-IR - genereate TAC(three address code) with quadruple structure:
-    Quadruple: It is a structure which consists of 4 fields namely op, arg1, arg2 and result. 
-    op denotes the operator and arg1 and arg2 denotes the two operands and result is used to store 
-    the result of the expression. (from GeeksForGeeks)
+    IR - genereate TAC(three address code) with quadruple structure:
+        Quadruple: It is a structure which consists of 4 fields namely op, arg1, arg2 and result. 
+        op denotes the operator and arg1 and arg2 denotes the two operands and result is used to store 
+        the result of the expression. (from GeeksForGeeks)
+
+5. IR optimization: 
+    1. Dead code elimintation - 
+    2. Constant propagation - 
+    3. Constant folding - 
 
 5. Code Gererator:
-    generate assembly code using libc library
+    generate assembly(x86-64 AMD) code using libc library - 
+    translation of IR instructions to asm code.
+    need to manage registires...
