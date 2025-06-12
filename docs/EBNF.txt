@@ -20,4 +20,4 @@ CompareOp    ::= "==" | "!=" | "<" | "<=" | ">" | ">="
 
 AddExpr      ::= Term { ("+" | "-") Term }
 Term         ::= Factor { ("*" | "/") Factor }
-Factor       ::= NUMBER | IDENT | "(" Expr ")"
+Factor       ::= NUMBER | IDENT | StringExpr | "(" Expr ")"
