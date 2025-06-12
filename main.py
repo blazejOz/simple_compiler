@@ -59,6 +59,7 @@ def main():
             subprocess.run(["nasm", "-felf64", "out.asm", "-o", "out.o"], check=True)
             subprocess.run(["gcc", "out.o", "-no-pie", "-o", "a.out"], check=True)
             print("Executable 'a.out' generated.")
+            print()
             subprocess.run(["./a.out"])
     else:
         repl()
