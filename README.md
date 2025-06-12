@@ -10,7 +10,7 @@ The compiler translates source code to x86-64 assembly and produces a native exe
 - **Data types:** `int` (64-bit), `str` (string literals)
 - **Statements:** variable declaration, assignment, print, if/else, while loops
 - **Expressions:** arithmetic, comparison, variables, literals
-- **Comments:** `//` for single-line comments
+- **Comments:** `#` for single-line comments
 - **Generates:** x86-64 NASM assembly, links with GCC
 
 ---
