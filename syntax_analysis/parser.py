@@ -178,6 +178,9 @@ class Parser:
         if self.current.kind == "IDENT":
             token = self.expect("IDENT")
             return VarExpr(token.text)
+        if self.current.kind == "STRING_LITERAL":
+            token = self.expect("STRING_LITERAL")
+            return StringExpr(token.text)
         if self.current.kind == "LPAREN":
             self.expect("LPAREN")
             expr = self.parse_expr()

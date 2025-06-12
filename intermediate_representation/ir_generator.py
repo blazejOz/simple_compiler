@@ -105,8 +105,8 @@ class IRGenerator:
         # node.var_type must be 'INT' or 'STRING'
         self.var_symbols[node.var_name] = node.var_type
         if node.var_type == 'STRING':
-            string_val = self.gen_expr(node.expr)
-            self.ir_list.append(IRInstr('store_str', node.var_name, string_val, None))
+            #string_val = self.gen_expr(node.expr)
+            self.ir_list.append(IRInstr('store_str', node.var_name, node.expr, None))
             return
         expr_tmp = self.gen_expr(node.expr)
         self.ir_list.append(IRInstr('store', node.var_name, expr_tmp, None))
@@ -146,5 +146,7 @@ class IRGenerator:
             self.ir_list.append(IRInstr('load', node.name, None, dest))
             return dest
         if isinstance(node, StringExpr):
-            return node.value
+            string_name = self.new_label("str")
+            self.ir_list.append(IRInstr('store_str', string_name , node.value, None, ))
+            return string_name
         raise NotImplementedError(f"IR gen for {type(node)} error")
