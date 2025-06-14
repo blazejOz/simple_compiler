@@ -70,6 +70,17 @@ class AsmGenerator:
                 vars.add(instr.arg1)
         return vars
     
+    def reg_byte(self, reg):
+        # Map 64-bit register to its 8-bit version for set* instructions
+        mapping = {
+            "rax": "al", "rbx": "bl", "rcx": "cl", "rdx": "dl",
+            "rsi": "sil", "rdi": "dil",
+            "rbp": "bpl", "rsp": "spl",
+            "r8": "r8b", "r9": "r9b", "r10": "r10b", "r11": "r11b",
+            "r12": "r12b", "r13": "r13b", "r14": "r14b", "r15": "r15b"
+        }
+        return mapping.get(reg, reg)  # fallback to reg if not found
+    
     def allocate_reg(self, temp):
         """
         Allocate a register for a temporary variable.
@@ -196,7 +207,7 @@ class AsmGenerator:
         reg_res = self.allocate_reg(instr.dest)
         self.asm.append(f"    mov {reg_res}, 0")
         self.asm.append(f"    cmp {reg1}, {reg2}")
-        self.asm.append(f"    setge {reg_res}b")
+        self.asm.append(f"    setge {self.reg_byte(reg_res)}")
 
     def emit_lt(self, instr):
         reg1 = self.temp_to_reg[instr.arg1]
