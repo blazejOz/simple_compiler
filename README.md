@@ -60,7 +60,7 @@ Example:
 python main.py myprogram.txt --all
 ```
 
-If no source file is given, you will be prompted to enter a path.
+If no source file is given, you will be in REPL mode.
 
 ---
 

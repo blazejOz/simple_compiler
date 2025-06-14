@@ -14,7 +14,7 @@ class TokenSpecification():
         ("IDENT", r"[a-zA-Z_][a-zA-Z0-9_]*"), # variable names, function names, etc
 
         #LITERALS
-        ("NUMBER", r"\d+"),  # integer
+        ("NUMBER", r"-?\d+"),  # integer (supports optional leading minus for negatives)
         ("STRING_LITERAL", r'"[^"]*"'),  # string literal (double quotes)
 
         #COMPARISON OPERATORS

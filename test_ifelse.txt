@@ -1,0 +1,7 @@
+int x = -5;
+str y = "value is positive";
+if(x >= 0){
+    print(y);
+}else{
+    print("val is negative");
+}

@@ -79,7 +79,7 @@ class AsmGenerator:
             "r8": "r8b", "r9": "r9b", "r10": "r10b", "r11": "r11b",
             "r12": "r12b", "r13": "r13b", "r14": "r14b", "r15": "r15b"
         }
-        return mapping.get(reg, reg)  # fallback to reg if not found
+        return mapping.get(reg, reg)
     
     def allocate_reg(self, temp):
         """
