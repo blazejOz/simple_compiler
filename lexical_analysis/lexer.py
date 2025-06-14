@@ -17,9 +17,13 @@ class Lexer():
         for match in re.finditer(master_pattern, self.src):
             kind = match.lastgroup # matched group
             value = match.group() # value captured
+            if kind == "NEWLINE":
+                line += 1
+                col = 1
+                continue
             if kind == "COMMENT":
-                col += len(value)
-                line += value.count("\n")
+                col = 1
+                line += 1
                 continue
             if kind == "SKIP":
                 col += len(value)

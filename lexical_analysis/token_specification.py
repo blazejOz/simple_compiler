@@ -20,10 +20,11 @@ class TokenSpecification():
         #COMPARISON OPERATORS
         ("EQ", r"=="),
         ("NEQ", r"!="),
-        ("LT", r"<"),
-        ("GT", r">"),
         ("LEQ", r"<="),
         ("GEQ", r">="),
+        ("LT", r"<"),
+        ("GT", r">"),
+
 
         #PUNCTUATION
         ("SEMI", r";"),
@@ -42,9 +43,9 @@ class TokenSpecification():
         ("DIV", r"/"),
 
         ("COMMENT", r"#[^\n]*"),
+        ("NEWLINE", r"\n"),
 
-
-        ("SKIP", r"[ \t\n]+"), #skip tabs, space, newline
+        ("SKIP", r"[ \t]+"), #skip tabs, space, newline
         ("MISMATCH", r"."), #other - error catch (needs to be last)
 
         ]

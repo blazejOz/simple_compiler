@@ -199,7 +199,7 @@ class AsmGenerator:
         reg_res = self.allocate_reg(instr.dest)
         self.asm.append(f"    mov {reg_res}, 0")
         self.asm.append(f"    cmp {reg1}, {reg2}")
-        self.asm.append(f"    setg {reg_res}b")
+        self.asm.append(f"    setg {self.reg_byte(reg_res)}")
 
     def emit_geq(self, instr):
         reg1 = self.temp_to_reg[instr.arg1]
@@ -215,7 +215,7 @@ class AsmGenerator:
         reg_res = self.allocate_reg(instr.dest)
         self.asm.append(f"    mov {reg_res}, 0")
         self.asm.append(f"    cmp {reg1}, {reg2}")
-        self.asm.append(f"    setl {reg_res}b")
+        self.asm.append(f"    setl {self.reg_byte(reg_res)}")
 
     def emit_leq(self, instr):
         reg1 = self.temp_to_reg[instr.arg1]
@@ -223,7 +223,7 @@ class AsmGenerator:
         reg_res = self.allocate_reg(instr.dest)
         self.asm.append(f"    mov {reg_res}, 0")
         self.asm.append(f"    cmp {reg1}, {reg2}")
-        self.asm.append(f"    setle {reg_res}b")
+        self.asm.append(f"    setle {self.reg_byte(reg_res)}")
 
     def emit_eq(self, instr):
         reg1 = self.temp_to_reg[instr.arg1]
@@ -231,7 +231,7 @@ class AsmGenerator:
         reg_res = self.allocate_reg(instr.dest)
         self.asm.append(f"    mov {reg_res}, 0")
         self.asm.append(f"    cmp {reg1}, {reg2}")
-        self.asm.append(f"    sete {reg_res}b")
+        self.asm.append(f"    sete {self.reg_byte(reg_res)}")
 
     def emit_neq(self, instr):
         reg1 = self.temp_to_reg[instr.arg1]
@@ -239,7 +239,7 @@ class AsmGenerator:
         reg_res = self.allocate_reg(instr.dest)
         self.asm.append(f"    mov {reg_res}, 0")
         self.asm.append(f"    cmp {reg1}, {reg2}")
-        self.asm.append(f"    setne {reg_res}b")
+        self.asm.append(f"    setne {self.reg_byte(reg_res)}")
 
     def emit_param(self, instr):
         self.param_queue.append(instr.arg1)
