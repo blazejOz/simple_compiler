@@ -25,7 +25,6 @@ class TokenSpecification():
         ("LT", r"<"),
         ("GT", r">"),
 
-
         #PUNCTUATION
         ("SEMI", r";"),
         ("ASSIGN", r"="),
@@ -45,7 +44,7 @@ class TokenSpecification():
         ("COMMENT", r"#[^\n]*"),
         ("NEWLINE", r"\n"),
 
-        ("SKIP", r"[ \t]+"), #skip tabs, space, newline
+        ("SKIP", r"[ \t]+"), #skip tabs, whitespace
         ("MISMATCH", r"."), #other - error catch (needs to be last)
 
         ]
