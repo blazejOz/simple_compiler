@@ -17,6 +17,14 @@ class TokenSpecification():
         ("NUMBER", r"\d+"),  # integer
         ("STRING_LITERAL", r'"[^"]*"'),  # string literal (double quotes)
 
+        #COMPARISON OPERATORS
+        ("EQ", r"=="),
+        ("NEQ", r"!="),
+        ("LT", r"<"),
+        ("GT", r">"),
+        ("LEQ", r"<="),
+        ("GEQ", r">="),
+
         #PUNCTUATION
         ("SEMI", r";"),
         ("ASSIGN", r"="),
@@ -32,14 +40,6 @@ class TokenSpecification():
         ("SUB", r"-"),
         ("MUL", r"\*"),
         ("DIV", r"/"),
-
-        #COMPARISON OPERATORS
-        ("EQ", r"=="),
-        ("NEQ", r"!="),
-        ("LT", r"<"),
-        ("GT", r">"),
-        ("LEQ", r"<="),
-        ("GEQ", r">="),
 
         ("COMMENT", r"#[^\n]*"),
 
