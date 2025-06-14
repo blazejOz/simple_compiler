@@ -77,6 +77,13 @@ def repl():
         asm = AsmGenerator(ir).gen()
         print("ASM:")
         print(asm)
+        with open("out.asm", "w") as asm_file:
+                asm_file.write(asm)
+        subprocess.run(["nasm", "-felf64", "out.asm", "-o", "out.o"], check=True)
+        subprocess.run(["gcc", "out.o", "-no-pie", "-o", "a.out"], check=True)
+        print("Executable 'a.out' generated.")
+        print()
+        subprocess.run(["./a.out"])
         
 
 if __name__ == "__main__":
