@@ -1,4 +1,4 @@
-from ast_classes import AssignStmt, NumberExpr, PrintStmt, BinaryExpr, StringExpr, VarDeclStmt, VarExpr, IfStmt, BlockStmt, CompareExpr, WhileStmt
+from ast_classes import *
 from intermediate_representation.ir_instruction import IRInstr
 
 class IRGenerator:
@@ -11,7 +11,7 @@ class IRGenerator:
         self.temp_id  = 0
         self.label_id = 0
         self.ir_list = []
-        self.var_symbols = {}  # name -> type ('INT' or 'STRING')
+        self.var_symbols = {}
 
     def new_temp(self):
         self.temp_id += 1

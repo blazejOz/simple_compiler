@@ -3,6 +3,7 @@ import argparse
 from code_generator.asm_generator import AsmGenerator
 from lexical_analysis.lexer import Lexer
 from syntax_analysis.parser import Parser
+from semantic_analysis.semantic_analyzer import SemanticAnalyzer
 from intermediate_representation.ir_generator import IRGenerator
 from intermediate_representation.ir_optimizer import IROptimizer
 
@@ -30,6 +31,7 @@ def main():
         
         tokens = Lexer(source_code).tokenize()
         ast = Parser(tokens).parse()
+        SemanticAnalyzer(ast).analyze()
         ir = IRGenerator(ast).gen()
         ir_opt = IROptimizer(ir).optimize()
         asm = AsmGenerator(ir_opt).gen()
@@ -73,6 +75,7 @@ def repl():
             break
         tokens = Lexer(src).tokenize()
         ast = Parser(tokens).parse()
+        SemanticAnalyzer(ast).analyze()
         ir = IRGenerator(ast).gen()
         asm = AsmGenerator(ir).gen()
         print("ASM:")
