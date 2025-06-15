@@ -60,7 +60,7 @@ class SemanticAnalyzer:
         if isinstance(expr, NumberExpr):
             return "INT"
         elif isinstance(expr, StringExpr):
-            return "STR"
+            return "STRING"
         elif isinstance(expr, VarIdentifier):
             return self.var_symbols.get(expr.name, None)
         return None
