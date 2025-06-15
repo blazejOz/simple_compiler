@@ -1,4 +1,4 @@
-from ast_classes import VarExpr, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt, IfStmt, CompareExpr, BlockStmt, WhileStmt, AssignStmt, StringExpr
+from ast_classes import VarIdentifier, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt, IfStmt, CompareExpr, BlockStmt, WhileStmt, AssignStmt, StringExpr
 
 class Parser:
     def __init__(self, tokens):
@@ -177,7 +177,7 @@ class Parser:
             return NumberExpr(int(token.text))
         if self.current.kind == "IDENT":
             token = self.expect("IDENT")
-            return VarExpr(token.text)
+            return VarIdentifier(token.text)
         if self.current.kind == "STRING_LITERAL":
             token = self.expect("STRING_LITERAL")
             return StringExpr(token.text)

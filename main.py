@@ -31,7 +31,8 @@ def main():
         
         tokens = Lexer(source_code).tokenize()
         ast = Parser(tokens).parse()
-        SemanticAnalyzer(ast).analyze()
+        analyzer = SemanticAnalyzer(ast)
+        analyzer.analyze()
         ir = IRGenerator(ast).gen()
         ir_opt = IROptimizer(ir).optimize()
         asm = AsmGenerator(ir_opt).gen()

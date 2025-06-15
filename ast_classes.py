@@ -19,7 +19,7 @@ class StringExpr(ASTNode):
     def __repr__(self):
         return f'StringExpr({self.value!r})'
 
-class VarExpr(ASTNode):
+class VarIdentifier(ASTNode):
     def __init__(self, name: str):
         self.name = name
     def __repr__(self):

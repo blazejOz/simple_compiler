@@ -87,7 +87,7 @@ class IRGenerator:
             tmp = self.gen_expr(expr)
             self.ir_list.append(IRInstr('param', "fmt_str"))
             self.ir_list.append(IRInstr('param', tmp))
-        elif isinstance(expr, VarExpr):
+        elif isinstance(expr, VarIdentifier):
             typ = self.get_var_type(expr.name)
             if typ == "STRING":
                 self.ir_list.append(IRInstr('param', "fmt_str"))
@@ -140,7 +140,7 @@ class IRGenerator:
             operator = operator_map[node.op]
             self.ir_list.append(IRInstr(operator, left, right, dest))
             return dest
-        if isinstance(node, VarExpr):
+        if isinstance(node, VarIdentifier):
             typ = self.get_var_type(node.name)
             dest = self.new_temp()
             self.ir_list.append(IRInstr('load', node.name, None, dest))
