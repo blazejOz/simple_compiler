@@ -3,10 +3,11 @@
     best use regex - simplest
 
 2. syntax_analysis
-    Parser - generate AST(abstract syntax tree based on EBNF)
+    Parser - generate AST(abstract syntax tree based on EBNF) 
     create ast_classes with all AST designs
 
-3. Semantic Analysys - check AST for semantic errors, dead code
+3. Semantic Analysys - checks AST for semantic errors
+
 
 4.Intermediete Representation
     IR - genereate TAC(three address code) with quadruple structure:

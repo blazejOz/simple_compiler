@@ -1,51 +1,42 @@
 from ast_classes import *
 
 class SemanticAnalyzer:
-    """
-    Catch semantic errors
-    """
     def __init__(self, asts):
         self.asts = asts
-        self.var_symbols = {}  # var_name -> type
-        self.errors = []
+        self.var_symbols = {}
 
     def analyze(self):
         for node in self.asts:
             self.visit(node)
-        if self.errors:
-            print("SEMANTIC ERRORS:")
-            for err in self.errors:
-                print("  ", err)
-            raise RuntimeError("Semantic analysis failed!")
 
     def visit(self, node):
         """
-        Check each node for variable 
+        Check for variable decalraction, assignemt, undeclared errors
         """
+        print(type(node), getattr(node, "var_name", ""), getattr(node, "expr", ""))
         if isinstance(node, VarDeclStmt):
             if node.var_name in self.var_symbols:
-                self.errors.append(f"Redefinition of variable {node.var_name}")
-            expr_type = self.guess_type(node.expr) #check expresion type
+                raise RuntimeError(f"Redefinition of variable {node.var_name}")
+            expr_type = self.guess_type(node.expr)
             if node.var_type != expr_type:
-                self.errors.append(
+                raise RuntimeError(
                     f"Type mismatch in declaration: variable '{node.var_name}' is '{node.var_type}', but assigned value is '{expr_type}'"
                 )
             self.var_symbols[node.var_name] = node.var_type
             self.visit(node.expr)
         elif isinstance(node, AssignStmt):
             if node.var_name not in self.var_symbols:
-                self.errors.append(f"Assignment to undeclared variable {node.var_name}")
-            else:
-                expected_type = self.var_symbols[node.var_name]
-                actual_type = self.guess_type(node.expr)
-                if expected_type != actual_type:
-                    self.errors.append(
-                        f"Type mismatch: cannot assign {actual_type} to {expected_type} variable '{node.var_name}'"
-                    )
+                raise RuntimeError(f"Assignment to undeclared variable {node.var_name}")
+            expected_type = self.var_symbols[node.var_name]
+            actual_type = self.guess_type(node.expr)
+            if expected_type != actual_type:
+                raise RuntimeError(
+                    f"Type mismatch: cannot assign {actual_type} to {expected_type} variable '{node.var_name}'"
+                )
             self.visit(node.expr)
         elif isinstance(node, VarIdentifier):
             if node.name not in self.var_symbols:
-                self.errors.append(f"Use of undeclared variable {node.name}")
+                raise RuntimeError(f"Use of undeclared variable {node.name}")
         elif isinstance(node, PrintStmt):
             self.visit(node.expr)
         elif isinstance(node, BinaryExpr):
@@ -67,11 +58,9 @@ class SemanticAnalyzer:
 
     def guess_type(self, expr):
         if isinstance(expr, NumberExpr):
-            return "int"
+            return "INT"
         elif isinstance(expr, StringExpr):
-            return "str"
+            return "STR"
         elif isinstance(expr, VarIdentifier):
             return self.var_symbols.get(expr.name, None)
-        elif isinstance(expr, BinaryExpr) or isinstance(expr, CompareExpr):
-            return "int"
         return None

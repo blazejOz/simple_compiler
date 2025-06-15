@@ -1,5 +1,6 @@
 int x = -5;
 x = "hello";
+
 str y = "value is positive";
 if(x >= 0){
     print(y);
