@@ -13,7 +13,6 @@ class SemanticAnalyzer:
         """
         Check for variable decalraction, assignemt, undeclared errors
         """
-        print(type(node), getattr(node, "var_name", ""), getattr(node, "expr", ""))
         if isinstance(node, VarDeclStmt):
             if node.var_name in self.var_symbols:
                 raise RuntimeError(f"Redefinition of variable {node.var_name}")
