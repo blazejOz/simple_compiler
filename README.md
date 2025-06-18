@@ -1,4 +1,4 @@
-# basic_compiler
+# simple_compiler
 
 A simple compiler written in Python for a basic programming language supporting integers, strings, variables, arithmetic, control flow, and printing.  
 The compiler translates source code to x86-64 assembly and produces a native executable.
@@ -60,7 +60,7 @@ Example:
 python main.py myprogram.txt --all
 ```
 
-If no source file is given, you will be in REPL mode.
+If no source file is given, you will start in REPL mode.
 
 ---
 
