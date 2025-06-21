@@ -1,4 +1,4 @@
-from ast_classes import VarIdentifier, NumberExpr, PrintStmt, BinaryExpr , VarDeclStmt, IfStmt, CompareExpr, BlockStmt, WhileStmt, AssignStmt, StringExpr
+from ast_classes import *
 
 class Parser:
     def __init__(self, tokens):
