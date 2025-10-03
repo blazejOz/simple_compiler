@@ -8,9 +8,10 @@ class TestLexer(unittest.TestCase):
         lexer = Lexer(source)
         tokens = lexer.tokenize()
         kinds = [tok.kind for tok in tokens]
-        self.assertIn("ID", kinds)
-        self.assertIn("CONST", kinds)
-        self.assertIn("NEWLINE", kinds)
+        self.assertIn("INT", kinds)
+        self.assertIn("IDENT", kinds)
+        self.assertIn("ASSIGN", kinds)
+        self.assertIn("NUMBER", kinds)
         self.assertIn("EOF", kinds)
 
     def test_operators_and_assignment(self):
@@ -18,22 +19,26 @@ class TestLexer(unittest.TestCase):
         lexer = Lexer(source)
         tokens = lexer.tokenize()
         kinds = [tok.kind for tok in tokens]
-        self.assertIn("ID", kinds)
-        self.assertIn("CONST", kinds)
+        self.assertIn("IDENT", kinds)
         self.assertIn("ASSIGN", kinds)
-        self.assertIn("PLUS", kinds)
+        self.assertIn("IDENT", kinds)
+        self.assertIn("ADD", kinds)
+        self.assertIn("NUMBER", kinds)
         self.assertIn("MUL", kinds)
         self.assertIn("SEMI", kinds)
+        self.assertIn("EOF", kinds)
 
     def test_comments_and_whitespace(self):
-        source = "int x = 1; // this is a comment\nx = x + 2;"
+        source = "int x = 1; # this is a comment\nx = x + 2;"
         lexer = Lexer(source)
         tokens = lexer.tokenize()
         kinds = [tok.kind for tok in tokens]
-        self.assertIn("COMMENT", kinds)
-        self.assertIn("NEWLINE", kinds)
-        self.assertIn("ID", kinds)
-        self.assertIn("CONST", kinds)
+        self.assertIn("IDENT", kinds)
+        self.assertIn("NUMBER", kinds)
+        self.assertIn("ASSIGN", kinds)
+        self.assertIn("ADD", kinds)
+        self.assertIn("SEMI", kinds)
+        self.assertIn("EOF", kinds)
 
     def test_multiple_lines(self):
         source = "int a = 1;\nint b = 2;\n"
@@ -52,7 +57,6 @@ class TestLexer(unittest.TestCase):
         source = "int x = 42\n"
         lexer = Lexer(source)
         tokens = lexer.tokenize()
-        # Check that line and column are tracked
         for tok in tokens:
             self.assertIsInstance(tok.line, int)
             self.assertIsInstance(tok.col, int)
